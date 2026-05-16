@@ -1,0 +1,7 @@
+{
+  "name": "kiosko-siag",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
