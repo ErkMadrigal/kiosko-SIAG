@@ -1,0 +1,45 @@
+<ion-content class="res-content" [fullscreen]="true">
+  <div class="res-wrap" [class.res-ok]="exito" [class.res-fail]="!exito">
+
+    <!-- Ícono principal -->
+    <div class="res-icon-wrap">
+      <div class="res-icon" [class.icon-ok]="exito" [class.icon-fail]="!exito">
+        <ion-icon [name]="exito ? 'checkmark-outline' : 'close-outline'"></ion-icon>
+      </div>
+      <div class="res-ring"></div>
+    </div>
+
+    <!-- Título -->
+    <h1 class="res-title">{{ exito ? 'Identidad verificada' : 'Acceso denegado' }}</h1>
+    <p class="res-sub">{{ exito ? 'ACCESO PERMITIDO' : 'ROSTRO NO COINCIDE' }}</p>
+
+    <!-- Card empleado -->
+    <div class="res-emp-card" *ngIf="empleado">
+      <div class="res-emp-av">{{ getInitials(empleado.nombreCompleto) }}</div>
+      <div class="res-emp-info">
+        <span class="res-emp-nombre">{{ empleado.nombreCompleto }}</span>
+        <span class="res-emp-det">{{ empleado.puesto || 'Guardia' }}</span>
+      </div>
+      <div class="res-modo" [class.modo-entrada]="modo === 'entrada'" [class.modo-salida]="modo === 'salida'">
+        <ion-icon [name]="modo === 'entrada' ? 'log-in-outline' : 'log-out-outline'"></ion-icon>
+        {{ modo === 'entrada' ? 'Entrada' : 'Salida' }}
+      </div>
+    </div>
+
+    <!-- Hora del registro -->
+    <div class="res-hora" *ngIf="exito">
+      <ion-icon name="time-outline"></ion-icon>
+      Registrado a las {{ hora }}
+    </div>
+
+    <!-- Botón volver -->
+    <button class="btn-volver" (click)="volverInicio()">
+      <ion-icon name="home-outline"></ion-icon>
+      Volver al inicio
+    </button>
+
+    <!-- Indicador de regreso automático -->
+    <p class="res-auto">Regresando automáticamente en 4 segundos...</p>
+
+  </div>
+</ion-content>

@@ -1,0 +1,118 @@
+<ion-content class="login-content" [fullscreen]="true">
+
+  <!-- Fondo con partículas -->
+  <div class="bg-mesh"></div>
+
+  <div class="login-wrap">
+
+    <!-- Alertas de requisitos -->
+    <div class="req-alerts" *ngIf="!verificandoRequisitos && !requisitos.listo">
+
+      <div class="req-alert" *ngIf="!requisitos.internet">
+        <div class="req-alert-icon">
+          <ion-icon name="wifi-outline"></ion-icon>
+        </div>
+        <div class="req-alert-body">
+          <span class="req-alert-title">Sin conexión a internet</span>
+          <span class="req-alert-sub">El kiosko necesita internet para funcionar. Verifica tu red WiFi o datos móviles.</span>
+        </div>
+      </div>
+
+      <div class="req-alert" *ngIf="!requisitos.ubicacion">
+        <div class="req-alert-icon">
+          <ion-icon name="location-outline"></ion-icon>
+        </div>
+        <div class="req-alert-body">
+          <span class="req-alert-title">Ubicación desactivada</span>
+          <span class="req-alert-sub">Activa el GPS en tu dispositivo y permite el acceso a la ubicación para continuar.</span>
+        </div>
+      </div>
+
+      <button class="btn-reintentar" (click)="verificarRequisitos()">
+        <ion-icon name="refresh-outline"></ion-icon>
+        Verificar de nuevo
+      </button>
+    </div>
+
+    <!-- Logo y título -->
+    <div class="login-brand">
+      <div class="brand-logo">
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+      </div>
+      <h1 class="brand-name">SkyNet</h1>
+      <p class="brand-sub">Control de Asistencia · Kiosko</p>
+    </div>
+
+    <!-- Card de acceso -->
+    <div class="login-card" [class.card-bloqueada]="!requisitos.listo && !verificandoRequisitos">
+
+      <div class="card-header">
+        <span class="card-title">Acceso de operador</span>
+        <span class="card-hint">Ingresa tu CURP, RFC o número de empleado</span>
+      </div>
+
+      <!-- Input -->
+      <div class="input-group" [class.input-error]="error">
+        <div class="input-icon">
+          <ion-icon name="key-outline"></ion-icon>
+        </div>
+        <input
+          class="kiosko-input"
+          [(ngModel)]="query"
+          (input)="onInput()"
+          (keyup.enter)="buscar()"
+          placeholder="Ej. 000178 · MAFE990706..."
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+          [disabled]="!requisitos.listo && !verificandoRequisitos"
+        />
+        <button class="input-clear" *ngIf="query" (click)="query = ''; error = ''">
+          <ion-icon name="close-circle"></ion-icon>
+        </button>
+      </div>
+
+      <!-- Mensaje de error -->
+      <div class="error-banner" *ngIf="error">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <span>{{ error }}</span>
+      </div>
+
+      <!-- Botón buscar -->
+      <button
+        class="btn-acceder"
+        (click)="buscar()"
+        [disabled]="!query.trim() || buscando || (!requisitos.listo && !verificandoRequisitos)"
+        [class.btn-loading]="buscando"
+      >
+        <span class="btn-spinner" *ngIf="buscando">
+          <span class="spinner-dot"></span>
+          <span class="spinner-dot"></span>
+          <span class="spinner-dot"></span>
+        </span>
+        <ion-icon name="search-outline" *ngIf="!buscando"></ion-icon>
+        <span>{{ buscando ? 'Buscando...' : 'Identificar operador' }}</span>
+      </button>
+
+      <!-- Estado requisitos OK -->
+      <div class="req-ok" *ngIf="requisitos.listo && !verificandoRequisitos">
+        <span class="req-dot internet"></span>
+        <span class="req-lbl">Internet</span>
+        <span class="req-dot ubicacion"></span>
+        <span class="req-lbl">Ubicación</span>
+      </div>
+
+      <!-- Verificando -->
+      <div class="req-verificando" *ngIf="verificandoRequisitos">
+        <div class="mini-spinner"></div>
+        <span>Verificando conexión y ubicación...</span>
+      </div>
+
+    </div>
+
+    <!-- Footer -->
+    <p class="login-footer">SkyNet-SIA v1.0 · Acceso restringido</p>
+
+  </div>
+
+</ion-content>

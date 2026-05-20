@@ -1,0 +1,144 @@
+.home-content { --background: #060d1f; }
+
+.bg-mesh {
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(35,86,168,0.35) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(14,50,120,0.25) 0%, transparent 50%);
+  z-index: 0; pointer-events: none;
+}
+
+.home-wrap {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: flex; flex-direction: column;
+  align-items: center; padding: 0 20px 40px;
+  gap: 24px;
+}
+
+/* Barra operador */
+.op-bar {
+  width: 100%; max-width: 420px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0 0;
+}
+.op-bar-left { display: flex; align-items: center; gap: 10px; }
+.op-av-sm {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: rgba(35,86,168,0.5);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.op-bar-info { display: flex; flex-direction: column; gap: 2px; }
+.op-bar-nombre { font-size: 13px; font-weight: 600; color: #fff; }
+.op-bar-sesion {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 11px; color: rgba(255,255,255,0.4);
+  ion-icon { font-size: 13px; }
+}
+.op-bar-right { display: flex; align-items: center; gap: 10px; }
+.hora-chip {
+  font-size: 16px; font-weight: 700; color: rgba(255,255,255,0.7);
+  font-variant-numeric: tabular-nums;
+}
+.btn-logout {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: rgba(240,84,84,0.15); border: 1px solid rgba(240,84,84,0.3);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  ion-icon { font-size: 18px; color: #f05454; }
+  &:active { background: rgba(240,84,84,0.3); }
+}
+
+/* Brand */
+.home-brand {
+  display: flex; flex-direction: column; align-items: center;
+  gap: 8px; text-align: center; padding-top: 8px;
+}
+.brand-logo-sm {
+  width: 64px; height: 64px; border-radius: 20px;
+  background: linear-gradient(135deg, #2356a8, #1a3a6b);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 28px rgba(35,86,168,0.5);
+  ion-icon { font-size: 34px; color: #fff; }
+}
+.brand-name { font-size: 22px; font-weight: 700; color: #fff; margin: 0; letter-spacing: -0.3px; }
+.brand-sub  { font-size: 13px; color: rgba(255,255,255,0.4); margin: 0; }
+
+/* Tabs modo */
+.modo-tabs {
+  display: flex; width: 100%; max-width: 420px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; padding: 4px; gap: 4px;
+}
+.modo-tab {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px; border-radius: 12px; border: none;
+  background: transparent; color: rgba(255,255,255,0.4);
+  font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s;
+  ion-icon { font-size: 20px; }
+  &:active { opacity: 0.7; }
+}
+.modo-tab.active-entrada {
+  background: rgba(34,201,122,0.15);
+  border: 1px solid rgba(34,201,122,0.3);
+  color: #22c97a;
+}
+.modo-tab.active-salida {
+  background: rgba(240,84,84,0.15);
+  border: 1px solid rgba(240,84,84,0.3);
+  color: #f05454;
+}
+
+/* Card búsqueda */
+.search-card {
+  width: 100%; max-width: 420px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px; padding: 24px 20px;
+  backdrop-filter: blur(16px);
+  display: flex; flex-direction: column; gap: 14px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.3);
+}
+.search-label { font-size: 17px; font-weight: 600; color: #fff; margin: 0; }
+.search-hint  { font-size: 13px; color: rgba(255,255,255,0.4); margin: -6px 0 0; }
+
+.input-group {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 13px 14px;
+  transition: border-color 0.2s;
+  &:focus-within { border-color: #2356a8; background: rgba(35,86,168,0.1); }
+  &.input-error  { border-color: rgba(240,84,84,0.5); }
+}
+.input-icon { ion-icon { font-size: 20px; color: rgba(255,255,255,0.25); } }
+.kiosko-input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-size: 16px; color: #fff; font-family: monospace; letter-spacing: 1.5px;
+  &::placeholder { color: rgba(255,255,255,0.2); font-family: -apple-system, sans-serif; letter-spacing: 0; font-size: 14px; }
+}
+.input-clear {
+  background: none; border: none; cursor: pointer;
+  ion-icon { font-size: 20px; color: rgba(255,255,255,0.3); }
+}
+
+.error-banner {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: rgba(240,84,84,0.1); border: 1px solid rgba(240,84,84,0.3);
+  border-radius: 12px; padding: 12px 14px; color: #f8a0a0; font-size: 13px; line-height: 1.5;
+  ion-icon { font-size: 18px; color: #f05454; flex-shrink: 0; margin-top: 1px; }
+}
+
+.btn-buscar {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 16px; border-radius: 14px; border: none;
+  background: linear-gradient(135deg, #22c97a, #16a05c);
+  color: #fff; font-size: 16px; font-weight: 600; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(34,201,122,0.35); transition: all 0.2s;
+  ion-icon { font-size: 20px; }
+  &.btn-salida { background: linear-gradient(135deg, #f05454, #c0392b); box-shadow: 0 4px 20px rgba(240,84,84,0.35); }
+  &:active:not(:disabled) { transform: scale(0.98); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}

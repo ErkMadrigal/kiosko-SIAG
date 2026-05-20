@@ -3,7 +3,11 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apiUrl: 'http://192.168.100.63/SkyNet-SIA/public/api/v1',
+  luxandToken: 'a5da54250240419999df7a0dfa36cd3d',
+  similarityThreshold: 0.8999
+
 };
 
 /*

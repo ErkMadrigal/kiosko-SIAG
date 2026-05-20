@@ -1,0 +1,262 @@
+.login-content {
+  --background: #060d1f;
+}
+
+/* Fondo con gradiente mesh */
+.bg-mesh {
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(35, 86, 168, 0.4) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(14, 50, 120, 0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(6, 13, 31, 1) 0%, transparent 100%);
+  z-index: 0;
+}
+
+/* Wrap principal */
+.login-wrap {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  gap: 28px;
+}
+
+/* Alertas de requisitos */
+.req-alerts {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: slide-down 0.3s ease;
+}
+
+.req-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: rgba(240, 84, 84, 0.1);
+  border: 1px solid rgba(240, 84, 84, 0.3);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+
+.req-alert-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(240, 84, 84, 0.2);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  ion-icon { font-size: 20px; color: #f05454; }
+}
+
+.req-alert-body {
+  display: flex; flex-direction: column; gap: 4px;
+}
+
+.req-alert-title {
+  font-size: 14px; font-weight: 600; color: #f05454;
+}
+
+.req-alert-sub {
+  font-size: 12px; color: rgba(255,255,255,0.6); line-height: 1.5;
+}
+
+.btn-reintentar {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.8);
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  width: 100%; transition: all 0.2s;
+  ion-icon { font-size: 18px; }
+  &:active { background: rgba(255,255,255,0.1); }
+}
+
+/* Brand */
+.login-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+.brand-logo {
+  width: 80px; height: 80px;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #2356a8 0%, #1a3a6b 100%);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 8px 32px rgba(35, 86, 168, 0.5);
+  ion-icon { font-size: 40px; color: #fff; }
+}
+
+.brand-name {
+  font-size: 32px; font-weight: 800;
+  color: #fff; letter-spacing: -1px; margin: 0;
+}
+
+.brand-sub {
+  font-size: 13px; color: rgba(255,255,255,0.4);
+  letter-spacing: 1px; text-transform: uppercase; margin: 0;
+}
+
+/* Card */
+.login-card {
+  width: 100%; max-width: 400px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 24px;
+  padding: 28px 24px;
+  backdrop-filter: blur(20px);
+  display: flex; flex-direction: column; gap: 16px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  transition: opacity 0.3s;
+
+  &.card-bloqueada { opacity: 0.5; pointer-events: none; }
+}
+
+.card-header { display: flex; flex-direction: column; gap: 4px; }
+.card-title  { font-size: 18px; font-weight: 600; color: #fff; }
+.card-hint   { font-size: 13px; color: rgba(255,255,255,0.4); }
+
+/* Input */
+.input-group {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 12px 14px;
+  transition: border-color 0.2s;
+
+  &:focus-within {
+    border-color: #2356a8;
+    background: rgba(35,86,168,0.1);
+  }
+
+  &.input-error { border-color: rgba(240,84,84,0.6); }
+}
+
+.input-icon {
+  ion-icon { font-size: 20px; color: rgba(255,255,255,0.3); }
+}
+
+.kiosko-input {
+  flex: 1; background: transparent; border: none;
+  outline: none; font-size: 16px; color: #fff;
+  font-family: monospace; letter-spacing: 1.5px;
+
+  &::placeholder {
+    color: rgba(255,255,255,0.2);
+    font-family: -apple-system, sans-serif;
+    letter-spacing: 0; font-size: 14px;
+  }
+
+  &:disabled { opacity: 0.4; }
+}
+
+.input-clear {
+  background: none; border: none; cursor: pointer; padding: 2px;
+  ion-icon { font-size: 20px; color: rgba(255,255,255,0.3); }
+  &:active ion-icon { color: rgba(255,255,255,0.6); }
+}
+
+/* Error */
+.error-banner {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: rgba(240,84,84,0.1);
+  border: 1px solid rgba(240,84,84,0.3);
+  border-radius: 12px; padding: 12px 14px;
+  color: #f8a0a0; font-size: 13px; line-height: 1.5;
+
+  ion-icon { font-size: 18px; color: #f05454; flex-shrink: 0; margin-top: 1px; }
+}
+
+/* Botón acceder */
+.btn-acceder {
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  width: 100%; padding: 16px;
+  border-radius: 14px; border: none;
+  background: linear-gradient(135deg, #2356a8 0%, #1a4080 100%);
+  color: #fff; font-size: 16px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 20px rgba(35,86,168,0.4);
+  ion-icon { font-size: 20px; }
+
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+    box-shadow: 0 2px 10px rgba(35,86,168,0.3);
+  }
+
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  &.btn-loading {
+    background: rgba(35,86,168,0.4);
+    box-shadow: none;
+  }
+}
+
+/* Spinner de 3 puntos */
+.btn-spinner {
+  display: flex; align-items: center; gap: 4px;
+}
+
+.spinner-dot {
+  width: 6px; height: 6px;
+  background: #fff; border-radius: 50%;
+  animation: bounce 1.2s ease-in-out infinite;
+
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.4s; }
+}
+
+@keyframes bounce {
+  0%,80%,100% { transform: scale(0.6); opacity: 0.4; }
+  40%          { transform: scale(1);   opacity: 1;   }
+}
+
+/* Requisitos OK */
+.req-ok {
+  display: flex; align-items: center; justify-content: center;
+  gap: 6px; padding-top: 4px;
+}
+
+.req-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  &.internet  { background: #22c97a; box-shadow: 0 0 6px #22c97a; }
+  &.ubicacion { background: #22c97a; box-shadow: 0 0 6px #22c97a; }
+}
+
+.req-lbl { font-size: 11px; color: rgba(255,255,255,0.4); margin-right: 8px; }
+
+/* Verificando */
+.req-verificando {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; color: rgba(255,255,255,0.4); font-size: 12px;
+}
+
+.mini-spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(255,255,255,0.1);
+  border-top-color: rgba(255,255,255,0.5);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Footer */
+.login-footer {
+  font-size: 11px; color: rgba(255,255,255,0.2);
+  letter-spacing: 0.5px; text-align: center; margin: 0;
+}
+
+/* Animaciones */
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

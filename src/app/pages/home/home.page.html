@@ -1,0 +1,86 @@
+<ion-content class="home-content" [fullscreen]="true">
+  <div class="bg-mesh"></div>
+
+  <div class="home-wrap">
+
+    <!-- Top bar operador -->
+    <div class="op-bar">
+      <div class="op-bar-left">
+        <div class="op-av-sm">{{ getInitials(sesion?.operadorNombre || '') }}</div>
+        <div class="op-bar-info">
+          <span class="op-bar-nombre">{{ sesion?.operadorNombre }}</span>
+          <span class="op-bar-sesion">
+            <ion-icon name="time-outline"></ion-icon>
+            Sesión válida · {{ tiempoRestante() }}
+          </span>
+        </div>
+      </div>
+      <div class="op-bar-right">
+        <span class="hora-chip">{{ horaActual }}</span>
+        <button class="btn-logout" (click)="cerrarSesion()">
+          <ion-icon name="power-outline"></ion-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Brand -->
+    <div class="home-brand">
+      <div class="brand-logo-sm">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </div>
+      <h1 class="brand-name">Control de Asistencia</h1>
+      <p class="brand-sub">Registra la entrada o salida del guardia</p>
+    </div>
+
+    <!-- Tabs modo -->
+    <div class="modo-tabs">
+      <button class="modo-tab" [class.active-entrada]="modo === 'entrada'" (click)="cambiarModo('entrada')">
+        <ion-icon name="log-in-outline"></ion-icon>
+        <span>Entrada</span>
+      </button>
+      <button class="modo-tab" [class.active-salida]="modo === 'salida'" (click)="cambiarModo('salida')">
+        <ion-icon name="log-out-outline"></ion-icon>
+        <span>Salida</span>
+      </button>
+    </div>
+
+    <!-- Card búsqueda -->
+    <div class="search-card">
+      <p class="search-label">Identificador del guardia</p>
+      <p class="search-hint">CURP, RFC o número de empleado</p>
+
+      <div class="input-group" [class.input-error]="error">
+        <ion-icon name="key-outline" class="input-icon"></ion-icon>
+        <input
+          class="kiosko-input"
+          [(ngModel)]="query"
+          (input)="onInput()"
+          (keyup.enter)="buscar()"
+          placeholder="Ej. 000178 · MAFE990706..."
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+        />
+        <button class="input-clear" *ngIf="query" (click)="query = ''; error = ''">
+          <ion-icon name="close-circle"></ion-icon>
+        </button>
+      </div>
+
+      <div class="error-banner" *ngIf="error">
+        <ion-icon name="alert-circle-outline"></ion-icon>
+        <span>{{ error }}</span>
+      </div>
+
+      <button
+        class="btn-buscar"
+        [class.btn-salida]="modo === 'salida'"
+        (click)="buscar()"
+        [disabled]="!query.trim()"
+      >
+        <ion-icon name="search-outline"></ion-icon>
+        <span>Registrar {{ modo === 'entrada' ? 'entrada' : 'salida' }}</span>
+      </button>
+    </div>
+
+  </div>
+</ion-content>

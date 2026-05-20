@@ -1,0 +1,141 @@
+<ion-content class="sl-content" [fullscreen]="true">
+  <div class="sl-bg"></div>
+
+  <div class="sl-wrap">
+
+    <!-- Header -->
+    <div class="sl-header">
+      <button class="btn-back" (click)="cancelar()">
+        <ion-icon name="close-outline"></ion-icon>
+      </button>
+      <span class="sl-header-title">Verificación de identidad</span>
+    </div>
+
+    <!-- Card empleado -->
+    <div class="emp-card" *ngIf="empleado">
+      <div class="emp-av">{{ getInitials(empleado.nombreCompleto) }}</div>
+      <div class="emp-info">
+        <span class="emp-nombre">{{ empleado.nombreCompleto }}</span>
+        <span class="emp-curp">{{ empleado.curp }}</span>
+      </div>
+      <div class="emp-chip">Operador</div>
+    </div>
+
+    <!-- Área central de estado -->
+    <div class="state-area">
+
+      <!-- Estado: listo -->
+      <div class="state-block" *ngIf="estado === 'listo'">
+        <div class="face-ring idle">
+          <div class="face-inner">
+            <ion-icon name="camera-outline"></ion-icon>
+          </div>
+          <svg class="ring-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="none"
+              stroke="rgba(79,142,247,0.3)" stroke-width="2"
+              stroke-dasharray="8 6"/>
+            <circle cx="60" cy="60" r="54" fill="none"
+              stroke="#4f8ef7" stroke-width="2.5"
+              stroke-dasharray="60 280" stroke-linecap="round"
+              class="ring-spin"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Estado: capturando -->
+      <div class="state-block" *ngIf="estado === 'capturando'">
+        <div class="face-ring capturing">
+          <div class="face-inner">
+            <ion-icon name="camera-outline"></ion-icon>
+          </div>
+          <svg class="ring-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="none"
+              stroke="#4f8ef7" stroke-width="3"
+              stroke-dasharray="30 310" stroke-linecap="round"
+              class="ring-spin-fast"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Estado: procesando -->
+      <div class="state-block" *ngIf="estado === 'procesando'">
+        <div class="face-ring processing">
+          <div class="face-inner processing-inner">
+            <div class="proc-dots">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+          <svg class="ring-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="none"
+              stroke="#4f8ef7" stroke-width="3"
+              stroke-dasharray="340" stroke-linecap="round"
+              class="ring-progress"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Estado: ok -->
+      <div class="state-block" *ngIf="estado === 'ok'">
+        <div class="face-ring success">
+          <div class="face-inner success-inner">
+            <ion-icon name="checkmark-circle-outline"></ion-icon>
+          </div>
+          <svg class="ring-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="none"
+              stroke="#22c97a" stroke-width="3"
+              stroke-dasharray="340"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Estado: fail -->
+      <div class="state-block" *ngIf="estado === 'fail'">
+        <div class="face-ring error">
+          <div class="face-inner error-inner">
+            <ion-icon name="close-circle-outline"></ion-icon>
+          </div>
+          <svg class="ring-svg" viewBox="0 0 120 120">
+            <circle cx="60" cy="60" r="54" fill="none"
+              stroke="#f05454" stroke-width="3"
+              stroke-dasharray="340" class="ring-shake"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- Textos de estado -->
+      <p class="state-title"
+        [class.ok]="estado === 'ok'"
+        [class.fail]="estado === 'fail'">
+        {{ mensaje }}
+      </p>
+      <p class="state-sub">{{ submensaje }}</p>
+
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="sl-actions">
+
+      <button
+        class="btn-scan"
+        *ngIf="estado === 'listo'"
+        (click)="iniciarEscaneo()">
+        <ion-icon name="camera-outline"></ion-icon>
+        Iniciar reconocimiento facial
+      </button>
+
+      <button
+        class="btn-scan btn-retry"
+        *ngIf="estado === 'fail'"
+        (click)="reintentar()">
+        <ion-icon name="refresh-outline"></ion-icon>
+        Intentar de nuevo
+      </button>
+
+      <button class="btn-cancel" (click)="cancelar()">
+        Cambiar usuario
+      </button>
+
+    </div>
+
+  </div>
+</ion-content>
