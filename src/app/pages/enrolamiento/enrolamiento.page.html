@@ -1,0 +1,57 @@
+<ion-content [fullscreen]="true" class="enr-content">
+  <div class="enr-wrap">
+
+    <!-- Header -->
+    <div class="enr-header">
+      <div class="enr-av">{{ getInitials(empleado?.nombreCompleto) }}</div>
+      <h1 class="enr-title">Enrolamiento facial</h1>
+      <p class="enr-sub">{{ empleado?.nombreCompleto }}</p>
+    </div>
+
+    <!-- Pasos -->
+    <div class="enr-pasos">
+      <div class="enr-paso" [class.activo]="paso === 1" [class.hecho]="paso === 2 || estado === 'ok'">
+        <span class="enr-paso-num">1</span> Guardar
+      </div>
+      <div class="enr-paso-linea"></div>
+      <div class="enr-paso" [class.activo]="paso === 2" [class.hecho]="estado === 'ok'">
+        <span class="enr-paso-num">2</span> Verificar
+      </div>
+    </div>
+
+    <!-- Cámara -->
+    <div class="enr-camara">
+      <video #video autoplay playsinline muted class="enr-video"></video>
+      <div class="enr-ovalo" [class.ok]="estado === 'ok'" [class.fail]="estado === 'fail'"></div>
+    </div>
+
+    <!-- Mensaje de estado -->
+    <div class="enr-msg" [class.ok]="estado === 'ok'" [class.fail]="estado === 'fail'">
+      {{ mensaje }}
+    </div>
+
+    <!-- Acciones -->
+    <div class="enr-acciones" *ngIf="estado !== 'ok'">
+      <button class="btn-sec" (click)="cancelar()">Cancelar</button>
+
+      <button
+        class="btn-cap"
+        *ngIf="estado === 'esperando_captura_1' || estado === 'esperando_captura_2'"
+        (click)="capturar()"
+      >
+        {{ paso === 1 ? 'Capturar (1/2)' : 'Capturar (2/2)' }}
+      </button>
+
+      <button
+        class="btn-sec"
+        *ngIf="estado === 'esperando_captura_2'"
+        (click)="reiniciar()"
+      >
+        Empezar de nuevo
+      </button>
+
+      <div class="enr-spinner" *ngIf="estado === 'cargando_modelos' || estado === 'preparando' || estado === 'enviando'"></div>
+    </div>
+
+  </div>
+</ion-content>

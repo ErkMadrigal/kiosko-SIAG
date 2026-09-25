@@ -1,0 +1,195 @@
+<ion-content [fullscreen]="true" class="scanner-tf-content">
+
+  <!-- Video + Canvas oculto para captura -->
+  <video #video autoplay playsinline muted class="camera-feed"></video>
+  <canvas #canvas class="capture-canvas"></canvas>
+
+  <!-- Máscara de pantalla completa -->
+  <svg class="full-svg" viewBox="0 0 300 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="glow">
+        <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+        <feMerge>
+          <feMergeNode in="coloredBlur"/>
+          <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+      </filter>
+      <mask id="screenMask">
+        <rect width="300" height="600" fill="white"/>
+        <ellipse cx="150" cy="290" rx="125" ry="175" fill="black"/>
+      </mask>
+    </defs>
+
+    <!-- Capa oscura con agujero oval -->
+    <rect width="300" height="600" fill="rgba(0,0,0,0.85)" mask="url(#screenMask)"/>
+
+    <!-- Borde del óvalo -->
+    <ellipse
+      cx="150" cy="290" rx="125" ry="175"
+      fill="none"
+      [attr.stroke]="colorOval"
+      stroke-width="2.5"
+      filter="url(#glow)"
+      [style.opacity]="estado === 'escaneando' ? 1 : 0.7"
+    />
+
+    <!-- Línea de escaneo -->
+    <line
+      *ngIf="estado === 'escaneando'"
+      x1="27" [attr.y1]="scanY + 115"
+      x2="273" [attr.y2]="scanY + 115"
+      [attr.stroke]="colorOval"
+      stroke-width="1.5"
+      stroke-opacity="0.7"
+    />
+
+    <!-- Esquinas decorativas -->
+    <path d="M 60 145 L 40 145 L 40 165" fill="none" [attr.stroke]="colorOval" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 240 145 L 260 145 L 260 165" fill="none" [attr.stroke]="colorOval" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 60 435 L 40 435 L 40 415" fill="none" [attr.stroke]="colorOval" stroke-width="3" stroke-linecap="round"/>
+    <path d="M 240 435 L 260 435 L 260 415" fill="none" [attr.stroke]="colorOval" stroke-width="3" stroke-linecap="round"/>
+
+    <!-- Icono central según estado -->
+    <g *ngIf="estado === 'ok'" filter="url(#glow)">
+      <circle cx="150" cy="290" r="36" fill="rgba(34,201,122,0.15)" stroke="#22c97a" stroke-width="2"/>
+      <text x="150" y="302" text-anchor="middle" font-size="28" fill="#22c97a">✓</text>
+    </g>
+    <g *ngIf="estado === 'fail' || estado === 'sin_rostro'">
+      <circle cx="150" cy="290" r="36" fill="rgba(240,84,84,0.15)" stroke="#f05454" stroke-width="2"/>
+      <text x="150" y="302" text-anchor="middle" font-size="28" fill="#f05454">✗</text>
+    </g>
+    <g *ngIf="estado === 'bloqueado'">
+      <circle cx="150" cy="290" r="36" fill="rgba(240,84,84,0.15)" stroke="#f05454" stroke-width="2"/>
+      <text x="150" y="302" text-anchor="middle" font-size="26" fill="#f05454">🔒</text>
+    </g>
+    <g *ngIf="estado === 'retardo'">
+      <circle cx="150" cy="290" r="36" fill="rgba(245,166,35,0.15)" stroke="#f5a623" stroke-width="2"/>
+      <text x="150" y="302" text-anchor="middle" font-size="26" fill="#f5a623">⚠️</text>
+    </g>
+    <g *ngIf="estado === 'cargando_modelos' || estado === 'preparando' || estado === 'procesando'">
+      <circle cx="150" cy="290" r="36" fill="rgba(79,142,247,0.1)" stroke="#4f8ef7" stroke-width="2" stroke-dasharray="8 4">
+        <animateTransform attributeName="transform" type="rotate" from="0 150 290" to="360 150 290" dur="1.5s" repeatCount="indefinite"/>
+      </circle>
+      <text x="150" y="297" text-anchor="middle" font-size="13" fill="#4f8ef7" font-family="monospace">AI</text>
+    </g>
+  </svg>
+
+  <!-- Overlay principal -->
+  <div class="overlay">
+
+    <!-- Header -->
+    <div class="tf-header">
+      <button class="btn-back" (click)="cancelar()">
+        <ion-icon name="arrow-back-outline"></ion-icon>
+      </button>
+      <div class="tf-badge">
+        <ion-icon name="hardware-chip-outline"></ion-icon>
+        TensorFlow.js · Pruebas
+      </div>
+      <div class="emp-chip">
+        <div class="emp-av-sm">{{ getInitials(empleado.nombreCompleto || '') }}</div>
+        <span>{{ empleado.nombreCompleto }}</span>
+      </div>
+    </div>
+
+    <div class="spacer"></div>
+
+    <!-- Panel de métricas TF — visible cuando hay resultado -->
+    <div class="tf-metrics" *ngIf="resultadoTF.score !== undefined">
+      <div class="tf-metric-title">
+        <ion-icon name="analytics-outline"></ion-icon>
+        Resultado TensorFlow.js
+      </div>
+      <div class="tf-metric-row">
+        <div class="tf-metric">
+          <div class="tf-metric-val" [style.color]="colorScore">{{ scorePercent }}</div>
+          <div class="tf-metric-lbl">Similitud</div>
+        </div>
+        <div class="tf-metric">
+          <div class="tf-metric-val">{{ distanciaStr }}</div>
+          <div class="tf-metric-lbl">Distancia</div>
+        </div>
+        <div class="tf-metric">
+          <div class="tf-metric-val">{{ resultadoTF.tiempoMs }}ms</div>
+          <div class="tf-metric-lbl">Tiempo</div>
+        </div>
+        <div class="tf-metric">
+          <div class="tf-metric-val" [style.color]="resultadoTF.similar ? '#22c97a' : '#f05454'">
+            {{ resultadoTF.similar ? 'MATCH' : 'NO MATCH' }}
+          </div>
+          <div class="tf-metric-lbl">Resultado</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel bloqueado -->
+    <div class="blocked-panel" *ngIf="estado === 'bloqueado'">
+      <div class="blocked-icon">🔒</div>
+      <div class="blocked-title">Turno no cumplido</div>
+      <div class="blocked-info">
+        <div class="blocked-row">
+          <span class="blocked-lbl">Puedes salir a partir de:</span>
+          <span class="blocked-val">{{ infoBloqueado.horaSalidaValida }}</span>
+        </div>
+        <div class="blocked-row">
+          <span class="blocked-lbl">Tiempo restante:</span>
+          <span class="blocked-val red">{{ infoBloqueado.tiempoRestante }}</span>
+        </div>
+      </div>
+      <div class="blocked-note">{{ infoBloqueado.mensajeSupervisor }}</div>
+    </div>
+
+    <!-- Panel retardo -->
+    <div class="retardo-panel" *ngIf="estado === 'retardo'">
+      <div class="retardo-icon">⚠️</div>
+      <div class="retardo-title">Entrada con retardo</div>
+      <div class="retardo-mins">{{ infoRegistro.minutosRetardo }} minutos tarde</div>
+      <div class="retardo-note">Tu registro fue guardado. Puedes presentar justificante a tu supervisor.</div>
+    </div>
+
+    <!-- Info de registro exitoso -->
+    <div class="registro-info" *ngIf="estado === 'ok' && infoRegistro.tipo">
+      <div class="reg-row" *ngIf="infoRegistro.tipo === 'entrada'">
+        <ion-icon name="log-in-outline" style="color:#22c97a"></ion-icon>
+        <span>Entrada registrada · {{ infoRegistro.turno }}</span>
+      </div>
+      <div class="reg-row" *ngIf="infoRegistro.tipo === 'entrada' && infoRegistro.horaSalidaEsperada">
+        <ion-icon name="time-outline" style="color:rgba(255,255,255,.5)"></ion-icon>
+        <span style="color:rgba(255,255,255,.6)">Salida esperada: {{ infoRegistro.horaSalidaEsperada }}</span>
+      </div>
+      <div class="reg-row" *ngIf="infoRegistro.tipo === 'salida'">
+        <ion-icon name="log-out-outline" style="color:#22c97a"></ion-icon>
+        <span>Salida registrada correctamente</span>
+      </div>
+    </div>
+
+     <!-- Mensaje de estado -->
+    <div class="status-msg" [ngClass]="{
+      'ok':        estado === 'ok',
+      'fail':      estado === 'fail' || estado === 'sin_rostro',
+      'bloqueado': estado === 'bloqueado',
+      'retardo':   estado === 'retardo',
+      'loading':   estado === 'cargando_modelos' || estado === 'preparando' || estado === 'procesando'
+    }">
+      {{ mensajeEstado }}
+    </div>
+
+    <!-- Botones inferiores -->
+    <div class="bottom-actions">
+      <button class="btn-cancel" (click)="cancelar()">
+        <ion-icon name="close-outline"></ion-icon>
+        Cancelar
+      </button>
+      <button
+        class="btn-retry"
+        *ngIf="estado === 'fail' || estado === 'sin_rostro'"
+        (click)="reintentar()"
+      >
+        <ion-icon name="refresh-outline"></ion-icon>
+        Reintentar
+      </button>
+    </div>
+
+  </div>
+
+</ion-content>

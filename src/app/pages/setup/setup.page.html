@@ -1,0 +1,163 @@
+<ion-content [fullscreen]="true" class="setup-content">
+  <div class="setup-wrap">
+
+    <!-- Header -->
+    <div class="setup-header">
+      <div class="setup-logo">
+        <ion-icon name="sync-outline"></ion-icon>
+      </div>
+      <h1 class="setup-title">Configuración del Dispositivo</h1>
+      <div class="net-status" [class.online]="hayInternet">
+        <ion-icon [name]="hayInternet ? 'wifi-outline' : 'cloud-offline-outline'"></ion-icon>
+        {{ hayInternet ? 'En línea' : 'Sin conexión' }}
+      </div>
+    </div>
+
+    <!-- Mensaje -->
+    <div class="msg" *ngIf="mensaje" [class.ok]="tipoMensaje === 'ok'" [class.error]="tipoMensaje === 'error'">
+      {{ mensaje }}
+    </div>
+
+    <!-- Progreso -->
+    <div class="progreso" *ngIf="cargando">
+      <div class="prog-spinner"></div>
+      <span>{{ progreso || 'Procesando...' }}</span>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-val">{{ empleados.length }}</div>
+        <div class="stat-lbl">Empleados</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val" [class.red]="pendientes > 0">{{ pendientes }}</div>
+        <div class="stat-lbl">Pendientes</div>
+      </div>
+      <div class="stat">
+        <div class="stat-val small">{{ formatDate(ultimaSync) }}</div>
+        <div class="stat-lbl">Última sync</div>
+      </div>
+    </div>
+
+    <!-- Sync por ubicación -->
+    <div class="card">
+      <div class="card-title">
+        <ion-icon name="cloud-download-outline"></ion-icon>
+        Sincronizar por ubicación
+      </div>
+
+      <div class="ubicacion-buscador">
+        <div class="input-row">
+          <input
+            class="inp"
+            type="text"
+            placeholder="Escribe el nombre de la ubicación (ej. SICT Colima)"
+            [(ngModel)]="queryUbicacion"
+            (ngModelChange)="onInputUbicacion()"
+          />
+          <button
+            class="btn-acc"
+            (click)="sincronizar()"
+            [disabled]="cargando || !ubicacionSeleccionada"
+          >
+            <ion-icon name="cloud-download-outline"></ion-icon>
+            Sync
+          </button>
+        </div>
+
+        <!-- Ubicación ya elegida -->
+        <div class="ubicacion-chip" *ngIf="ubicacionSeleccionada">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          {{ ubicacionSeleccionada.nombre }}
+          <button class="chip-quitar" (click)="limpiarUbicacion()">✕</button>
+        </div>
+
+        <!-- Resultados de búsqueda -->
+        <div class="ubicacion-resultados" *ngIf="resultadosUbicacion.length && !ubicacionSeleccionada">
+          <div
+            class="ubicacion-item"
+            *ngFor="let u of resultadosUbicacion"
+            (click)="elegirUbicacion(u)"
+          >
+            {{ u.nombre }}
+          </div>
+        </div>
+
+        <p class="card-hint" *ngIf="buscandoUbicacion">Buscando...</p>
+        <p class="card-hint" *ngIf="!buscandoUbicacion && queryUbicacion.trim().length >= 3 && !resultadosUbicacion.length && !ubicacionSeleccionada">
+          No se encontró ninguna ubicación con ese nombre
+        </p>
+      </div>
+
+      <button class="btn-gps" (click)="obtenerUbicacionGPS()" [disabled]="cargando">
+        <ion-icon name="location-outline"></ion-icon>
+        Detectar ubicación por GPS
+      </button>
+      <p class="card-hint">Descarga todos los empleados de esa ubicación con reconocimiento facial, para poder registrar entrada/salida sin internet</p>
+    </div>
+
+    <!-- Buscar empleado individual -->
+    <div class="card">
+      <div class="card-title">
+        <ion-icon name="search-outline"></ion-icon>
+        Agregar empleado individual
+      </div>
+      <div class="input-row">
+        <input
+          class="inp"
+          type="text"
+          placeholder="CURP, RFC o número (000178)"
+          [(ngModel)]="queryBuscar"
+          (keyup.enter)="buscarYAgregar()"
+        />
+        <button class="btn-acc" (click)="buscarYAgregar()" [disabled]="cargando">
+          <ion-icon name="search-outline"></ion-icon>
+          Agregar
+        </button>
+      </div>
+    </div>
+
+    <!-- Subir pendientes -->
+    <div class="card" *ngIf="pendientes > 0">
+      <div class="card-title">
+        <ion-icon name="cloud-download-outline"></ion-icon>
+        Asistencias pendientes de subir
+      </div>
+      <p class="card-hint red">{{ pendientes }} registros guardados offline sin sincronizar</p>
+      <button class="btn-full" (click)="subirPendientes()" [disabled]="cargando || !hayInternet">
+        <ion-icon name="sync-outline"></ion-icon>
+        Subir ahora
+      </button>
+    </div>
+
+    <!-- Lista empleados -->
+    <div class="card" *ngIf="empleados.length">
+      <div class="card-title">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        Empleados en este dispositivo
+      </div>
+      <div class="emp-list">
+        <div class="emp-item" *ngFor="let e of empleados">
+          <div class="emp-av">{{ getInitials(e.nombre_completo) }}</div>
+          <div class="emp-info">
+            <div class="emp-nombre">{{ e.nombre_completo }}</div>
+            <div class="emp-sub">{{ e.curp }} · {{ e.puesto }}</div>
+            <div class="emp-desc" [class.ok]="e.descriptor" [class.error]="!e.descriptor">
+              {{ e.descriptor ? '✓ Descriptor facial listo' : '✗ Sin descriptor facial' }}
+            </div>
+          </div>
+          <button class="btn-del" (click)="eliminarEmpleado(e.id, e.nombre_completo)">
+            <ion-icon name="trash-outline"></ion-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ir al home -->
+    <button class="btn-home" (click)="irHome()" [disabled]="cargando">
+      Ir al inicio
+    </button>
+
+  </div>
+</ion-content>

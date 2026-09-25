@@ -14,13 +14,61 @@ export class BiometricoService {
   ) {}
 
   // ── Buscar empleado por CURP, RFC o número ──────────
-  async buscarEmpleado(query: string, salida: boolean = false): Promise<Empleado> {
+  async buscarEmpleado(query: string): Promise<Empleado> {
     const res: any = await firstValueFrom(
-      this.api.post('/biometrico/buscar', { query, salida })
+      this.api.post('/auth/biometrico/buscar', { query })
     );
     const emp = Array.isArray(res.data) ? res.data[0] : res.data;
     if (!emp) throw new Error('Empleado no encontrado');
     return emp as Empleado;
+  }
+
+  // ── Verificar estado ANTES de abrir cámara ──────────
+  // Llama al backend para saber si el empleado puede registrar
+  // entrada o salida SIN gastar tokens de Luxand.
+  // Retorna: { puede: true } o { puede: false, bloqueado: true, data: {...} }
+  //          o { puede: false, error: true, message: '...' }
+  async verificarEstado(idEmpleado: number, esSalida: boolean): Promise<{
+    puede:     boolean;
+    bloqueado?: boolean;
+    error?:     boolean;
+    message?:   string;
+    data?: {
+      hora_salida_valida?: string;
+      tiempo_restante?:    string;
+      minutos_restantes?:  number;
+    };
+  }> {
+    try {
+      const res: any = await firstValueFrom(
+        this.api.get(`/biometrico/estado/${idEmpleado}?salida=${esSalida ? 1 : 0}`)
+      );
+
+      // Backend dice OK — puede registrar
+      if (res.status === 'ok') {
+        return { puede: true };
+      }
+
+      // Backend dice bloqueado (salida anticipada)
+      if (res.status === 'bloqueado') {
+        return { puede: false, bloqueado: true, data: res.data, message: res.message };
+      }
+
+      // Cualquier otro error conocido (doble entrada, etc.)
+      return { puede: false, error: true, message: res.message || 'No se puede registrar' };
+
+    } catch (err: any) {
+      // HTTP 423 — salida bloqueada
+      if (err?.status === 423) {
+        return { puede: false, bloqueado: true, data: err.error?.data, message: err.error?.message };
+      }
+      // HTTP 409 — doble entrada/salida
+      if (err?.status === 409) {
+        return { puede: false, error: true, message: err.error?.message || 'Registro duplicado' };
+      }
+      // Error de red u otro
+      return { puede: false, error: true, message: 'Error de conexión' };
+    }
   }
 
   // ── Descargar foto del empleado como Blob ───────────
@@ -47,13 +95,14 @@ export class BiometricoService {
     };
   }
 
-  // ── Registrar asistencia ────────────────────────────
-  async registrarAsistencia(params: {
-    id_empleado: number;
-    lat: number | null;
-    lon: number | null;
-    ip: string;
-    salida: boolean;
+  // ── Registrar entrada/salida biométrica ─────────────
+  async registrarAsistenciaLegacy(params: {
+    id_empleado:    number;
+    lat:            number | null;
+    lon:            number | null;
+    ip:             string;
+    salida:         boolean;
+    id_capturista?: number;
   }): Promise<any> {
     return firstValueFrom(
       this.api.post('/biometrico/registro', params)
@@ -78,9 +127,30 @@ export class BiometricoService {
       navigator.geolocation.getCurrentPosition(
         pos => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
         err => reject(err),
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: false, timeout: 4000, maximumAge: 30000 } // ← cambios aquí
       );
     });
+  }
+
+  // ── Enrolamiento facial (estilo Cheil) ──────────────
+  // 2 capturas en vivo: descriptorGuardar es la que se guarda,
+  // descriptorVerificar es una segunda inmediata solo para confirmar
+  // calidad (el backend calcula la distancia entre ambas y rechaza si
+  // no coinciden lo suficiente).
+  async enrolarRostro(
+    idEmpleado: number,
+    descriptorGuardar: number[],
+    descriptorVerificar: number[],
+    idCapturista?: number,
+  ): Promise<{ status: string; message: string; distancia?: number }> {
+    return firstValueFrom(
+      this.api.post('/biometrico/enrolar', {
+        id_empleado: idEmpleado,
+        descriptor_guardar: descriptorGuardar,
+        descriptor_verificar: descriptorVerificar,
+        id_capturista: idCapturista ?? 0,
+      })
+    );
   }
 
   async buscarOperador(query: string): Promise<Empleado> {
@@ -91,4 +161,20 @@ export class BiometricoService {
     if (!emp) throw new Error('Empleado no encontrado');
     return emp as Empleado;
   }
+}
+
+export interface RegistroResponse {
+  status:  'ok' | 'bloqueado';
+  tipo:    'entrada' | 'salida' | 'salida_anticipada';
+  data?: {
+    estado_entrada?:       'puntual' | 'retardo_leve' | 'retardo_grave';
+    minutos_retardo?:      number;
+    hora_salida_esperada?: string;
+    turno?:                string;
+    estado_salida?:        'normal' | 'tardanza_salida';
+    hora_salida_valida?:   string;
+    tiempo_restante?:      string;
+    minutos_restantes?:    number;
+    mensaje_supervisor?:   string;
+  };
 }

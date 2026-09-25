@@ -3,7 +3,6 @@ import { inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { KioskoAuthService } from './services/kiosko-auth.service';
 
-// Guard — redirige al login si no hay sesión
 const authGuard = () => {
   const auth   = inject(KioskoAuthService);
   const router = inject(Router);
@@ -11,7 +10,6 @@ const authGuard = () => {
   return router.createUrlTree(['/login']);
 };
 
-// Guard — redirige al home si ya hay sesión
 const guestGuard = () => {
   const auth   = inject(KioskoAuthService);
   const router = inject(Router);
@@ -40,22 +38,41 @@ export const routes: Routes = [
     path: 'home',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/home/home.page').then(m => m.HomePage),
+      import('./pages/home/Home.page').then(m => m.HomePage),
   },
   {
     path: 'scanner',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/scanner/scanner.page').then(m => m.ScannerPage),
+      import('./pages/scanner/Scanner.page').then(m => m.ScannerPage),
+  },
+  // ── Vista de pruebas TensorFlow — solo empleado 178 ──────────────
+  {
+    path: 'scanner-tf',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/scanner-tf/scanner-tf.page').then(m => m.ScannerTfPage),
+  },
+  // NUEVO -- enrolamiento facial (2 capturas), antes de poder usar scanner-tf
+  {
+    path: 'enrolamiento',
+    canActivate: [authGuard],
+    loadComponent: () =>
+      import('./pages/enrolamiento/enrolamiento.page').then(m => m.EnrolamientoPage),
   },
   {
     path: 'resultado',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./pages/resultado/resultado.page').then(m => m.ResultadoPage),
+      import('./pages/resultado/Resultado.page').then(m => m.ResultadoPage),
+  },
+  {
+    path: 'setup',
+    loadComponent: () => import('./pages/setup/setup.page').then( m => m.SetupPage)
   },
   {
     path: '**',
     redirectTo: 'login',
   },
+
 ];

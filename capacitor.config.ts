@@ -5,7 +5,7 @@ const config: CapacitorConfig = {
   appName: 'Kiosko SIAG',
   webDir: 'www',
   server: {
-    androidScheme: 'http', // ← cambiar de https a http
+    androidScheme: 'https', // ← cambiar de https a http
   },
   plugins: {
     Camera: {

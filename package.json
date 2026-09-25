@@ -12,6 +12,9 @@
     "lint": "ng lint"
   },
   "private": true,
+  "overrides": {
+    "sql.js": "1.11.0"
+  },
   "dependencies": {
     "@angular/animations": "^20.0.0",
     "@angular/common": "^20.0.0",
@@ -22,6 +25,7 @@
     "@angular/platform-browser-dynamic": "^20.0.0",
     "@angular/router": "^20.0.0",
     "@capacitor-community/camera-preview": "^8.0.1",
+    "@capacitor-community/sqlite": "^8.1.0",
     "@capacitor-mlkit/face-detection": "^8.1.0",
     "@capacitor/android": "8.3.4",
     "@capacitor/app": "8.1.0",
@@ -33,6 +37,9 @@
     "@capacitor/network": "^8.0.1",
     "@capacitor/status-bar": "8.0.2",
     "@ionic/angular": "^8.0.0",
+    "@tensorflow/tfjs": "^4.22.0",
+    "@tensorflow/tfjs-backend-webgl": "^4.22.0",
+    "@vladmandic/face-api": "^1.7.15",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

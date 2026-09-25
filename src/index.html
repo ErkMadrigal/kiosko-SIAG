@@ -21,6 +21,18 @@
 
 <body>
   <app-root></app-root>
+  <!-- Requerido por @capacitor-community/sqlite cuando corre en navegador
+       (ng serve / build web) -- en Android/iOS nativo no se usa, el
+       plugin habla directo con SQLite del SO. Sin este elemento, toda
+       llamada a sqlite.* truena con "jeep-sqlite element is not present".
+
+       autoSave="true" -- SIN esto, la base vive nada más en memoria
+       (sql.js) y se pierde por completo al recargar la página; con
+       autoSave cada INSERT/UPDATE/DELETE se guarda solo en IndexedDB
+       (el "web store"), que sí sobrevive recargas. En Android/iOS
+       nativo este atributo no aplica -- ahí SQLite ya persiste en disco
+       de por sí. -->
+  <jeep-sqlite autoSave="true"></jeep-sqlite>
 </body>
 
 </html>

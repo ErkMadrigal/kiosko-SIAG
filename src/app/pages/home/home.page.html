@@ -6,9 +6,9 @@
     <!-- Top bar operador -->
     <div class="op-bar">
       <div class="op-bar-left">
-        <div class="op-av-sm">{{ getInitials(sesion?.operadorNombre || '') }}</div>
+        <div class="op-av-sm">{{ getInitials(sesion.operadorNombre || '') }}</div>
         <div class="op-bar-info">
-          <span class="op-bar-nombre">{{ sesion?.operadorNombre }}</span>
+          <span class="op-bar-nombre">{{ sesion.operadorNombre }}</span>
           <span class="op-bar-sesion">
             <ion-icon name="time-outline"></ion-icon>
             Sesión válida · {{ tiempoRestante() }}
@@ -55,7 +55,7 @@
           class="kiosko-input"
           [(ngModel)]="query"
           (input)="onInput()"
-          (keyup.enter)="buscar()"
+          (keyup.enter)="buscarConTF()"
           placeholder="Ej. 000178 · MAFE990706..."
           autocomplete="off"
           autocorrect="off"
@@ -74,13 +74,19 @@
       <button
         class="btn-buscar"
         [class.btn-salida]="modo === 'salida'"
-        (click)="buscar()"
+        (click)="buscarConTF()"
         [disabled]="!query.trim()"
       >
         <ion-icon name="search-outline"></ion-icon>
         <span>Registrar {{ modo === 'entrada' ? 'entrada' : 'salida' }}</span>
       </button>
+
     </div>
+
+    <button class="btn-setup" (click)="irSetup()">
+      <ion-icon name="settings-outline"></ion-icon>
+      Configuración del dispositivo
+    </button>
 
   </div>
 </ion-content>
